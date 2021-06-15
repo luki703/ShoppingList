@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Shopping List</string>
+    <string name="save">Dodaj do listy</string>
+    <string name="notesDefaultText">Wpisz tutaj artykuł</string>
+    <string name="EditTextTitle">Tytuł</string>
+    <string name="SecondPageButton">Przycisk</string>
+    <string name="SecondPageTitleText">Tytuł</string>
 </resources>
