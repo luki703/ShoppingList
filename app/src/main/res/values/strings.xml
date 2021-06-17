@@ -5,4 +5,5 @@
     <string name="EditTextTitle">Tytuł</string>
     <string name="SecondPageButton">Przycisk</string>
     <string name="SecondPageTitleText">Tytuł</string>
+    <string name="done">done</string>
 </resources>

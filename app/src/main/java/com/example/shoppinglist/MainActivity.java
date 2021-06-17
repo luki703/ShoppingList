@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -16,7 +18,9 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -34,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private ArrayList<String> stringArrayList;
     private ArrayAdapter<String> stringArrayAdapter;
+    private ArrayList<String> tempArrayList;
 
 
     @Override
@@ -46,30 +51,40 @@ public class MainActivity extends AppCompatActivity {
         notes=this.findViewById(R.id.notes);
         listView = this.findViewById(R.id.listView);
         stringArrayList = new ArrayList<String>();
+        tempArrayList = new ArrayList<String>();
         stringArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringArrayList);
         stringArrayAdapter.clear();
 
-       /* SharedPreferences.Editor editor = sharedPref.edit();
-        editor.clear();
-        editor.commit();*/
         listView.setAdapter(stringArrayAdapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         listView.setItemsCanFocus(false);
         notes.requestFocus();
         for (int i =0; i<=10;i++){
             stringArrayList.add("item"+i);
+            tempArrayList.add("item"+i);
             stringArrayAdapter.notifyDataSetChanged();
         }
-
-
+        //Collections.copy(tempArrayList,stringArrayList);
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            String value = (String)stringArrayAdapter.getItem(position);
+
+            String item = (String)stringArrayAdapter.getItem(position);
+            boolean blnFound = tempArrayList.contains(item);
             //notes.setText(value);
+            if (blnFound==true)
+            {
+                tempArrayList.remove(item);
+                view.setBackgroundColor(Color.parseColor("GREEN"));
+            }
+            else
+            {
+                tempArrayList.add(item);
+                view.setBackgroundColor(Color.red(1));
+            }
 
             view.setSelected(true);
 
-            //stringArrayAdapter.notifyDataSetChanged();
+            stringArrayAdapter.notifyDataSetChanged();
         });
 
         notes.setOnKeyListener(new View.OnKeyListener() {
@@ -106,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             stringArrayAdapter.notifyDataSetChanged();
             //hideSoftKeyboard(findViewById(android.R.id.content));
             notes.setText(null);
-            notes.callOnClick();
+            //notes.callOnClick();
 
 
         }

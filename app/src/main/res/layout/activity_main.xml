@@ -38,8 +38,9 @@
         android:layout_height="0dp"
         android:choiceMode="multipleChoice"
         android:dividerHeight="1dp"
-        android:listSelector="@color/pressed_color"
+
         app:layout_constraintBottom_toBottomOf="parent"
+
         app:layout_constraintTop_toBottomOf="@+id/saveNotes"
         />
 
