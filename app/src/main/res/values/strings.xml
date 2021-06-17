@@ -2,8 +2,12 @@
     <string name="app_name">Shopping List</string>
     <string name="save">Dodaj do listy</string>
     <string name="notesDefaultText">Wpisz tutaj artykuł</string>
-    <string name="EditTextTitle">Tytuł</string>
+    <string name="editTextTitle">Tytuł</string>
     <string name="SecondPageButton">Przycisk</string>
     <string name="SecondPageTitleText">Tytuł</string>
     <string name="done">done</string>
+    <string name="alertDialogText">Usunąć artykuł?</string>
+    <string name="alertDialogTitle">Alert</string>
+    <string name="alertDialogPositive">Usuń</string>
+    <string name="alertDialogNegative">Cofnij</string>
 </resources>

@@ -1,8 +1,10 @@
 package com.example.shoppinglist;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -64,13 +66,42 @@ public class MainActivity extends AppCompatActivity {
             tempArrayList.add("item"+i);
             stringArrayAdapter.notifyDataSetChanged();
         }
-        //Collections.copy(tempArrayList,stringArrayList);
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                String item = (String)stringArrayAdapter.getItem(position);
+                final boolean[] dialogExitStatus = {false};
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                alertDialog.setTitle(getString(R.string.alertDialogTitle));
+                alertDialog.setMessage(getString(R.string.alertDialogText));
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.alertDialogPositive),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.d( "AlertDialog", "Positive" );
+                                dialogExitStatus[0] = true;
+                                dialog.dismiss();
+                            }
+                        });
 
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.alertDialogNegative),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.d( "AlertDialog", "Negative" );
+                                dialog.dismiss();
+
+                            }
+                        });
+                alertDialog.show();
+                if (dialogExitStatus[0]==true)
+                    tempArrayList.remove(item);
+                    stringArrayList.remove(item);
+                return false;
+            }
+        });
         listView.setOnItemClickListener((parent, view, position, id) -> {
 
             String item = (String)stringArrayAdapter.getItem(position);
             boolean blnFound = tempArrayList.contains(item);
-            //notes.setText(value);
             if (blnFound==true)
             {
                 tempArrayList.remove(item);
@@ -118,10 +149,10 @@ public class MainActivity extends AppCompatActivity {
         {
 
             stringArrayList.add(notes.getText().toString());
+            tempArrayList.add(notes.getText().toString());
             stringArrayAdapter.notifyDataSetChanged();
             //hideSoftKeyboard(findViewById(android.R.id.content));
             notes.setText(null);
-            //notes.callOnClick();
 
 
         }
