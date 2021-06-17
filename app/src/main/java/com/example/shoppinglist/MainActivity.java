@@ -16,28 +16,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
-
-import java.io.BufferedReader;
-import java.io.StringReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class MainActivity extends AppCompatActivity {
 
     static String notesKey = "com.lukasz.ShoppingList.noteskey";
     private SharedPreferences sharedPref;
     private EditText notes;
-    private String noteString;
     private SharedPreferences.Editor editor;
     private ListView listView;
+    private boolean dialogExitStatus = false;
     private ArrayList<String> stringArrayList;
     private ArrayAdapter<String> stringArrayAdapter;
     private ArrayList<String> tempArrayList;
@@ -70,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 String item = (String)stringArrayAdapter.getItem(position);
-                final boolean[] dialogExitStatus = {false};
                 AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
                 alertDialog.setTitle(getString(R.string.alertDialogTitle));
                 alertDialog.setMessage(getString(R.string.alertDialogText));
@@ -78,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 Log.d( "AlertDialog", "Positive" );
-                                dialogExitStatus[0] = true;
+                                removeItemFromListView(item);
                                 dialog.dismiss();
                             }
                         });
@@ -87,14 +74,13 @@ public class MainActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 Log.d( "AlertDialog", "Negative" );
+
                                 dialog.dismiss();
 
                             }
                         });
                 alertDialog.show();
-                if (dialogExitStatus[0]==true)
-                    tempArrayList.remove(item);
-                    stringArrayList.remove(item);
+
                 return false;
             }
         });
@@ -138,6 +124,12 @@ public class MainActivity extends AppCompatActivity {
     {
         populateList();
 
+    }
+    public void removeItemFromListView(String item)
+    {
+        tempArrayList.remove(item);
+        stringArrayList.remove(item);
+        stringArrayAdapter.notifyDataSetChanged();
     }
     public void hideSoftKeyboard(View view){
         InputMethodManager imm =(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
