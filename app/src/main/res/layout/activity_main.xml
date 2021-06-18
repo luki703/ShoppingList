@@ -11,9 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="saveList"
-        android:text="@string/save"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:text="@string/saveBtn"
+        app:layout_constraintBottom_toTopOf="@+id/listView"
         app:layout_constraintTop_toBottomOf="@+id/notes" />
 
     <EditText
@@ -38,11 +37,23 @@
         android:layout_height="0dp"
         android:choiceMode="multipleChoice"
         android:dividerHeight="1dp"
-
-        app:layout_constraintBottom_toBottomOf="parent"
-
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/RestartBtn"
         app:layout_constraintTop_toBottomOf="@+id/saveNotes"
-        />
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="16dp"
+         />
+
+    <Button
+        android:id="@+id/RestartBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+
+        android:onClick="resetApp"
+        android:text="@string/restartBtnText"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listView" />
 
 
 

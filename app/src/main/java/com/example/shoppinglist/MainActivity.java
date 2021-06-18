@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         listView.setItemsCanFocus(false);
         notes.requestFocus();
         for (int i =0; i<=10;i++){
-            stringArrayList.add("item"+i);
+            stringArrayList.add(0,"item"+i);
             tempArrayList.add("item"+i);
             stringArrayAdapter.notifyDataSetChanged();
         }
@@ -65,7 +65,8 @@ public class MainActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 Log.d( "AlertDialog", "Positive" );
-                                removeItemFromListView(item);
+                                removeItemFromListView(item, parent);
+
                                 dialog.dismiss();
                             }
                         });
@@ -86,17 +87,19 @@ public class MainActivity extends AppCompatActivity {
         });
         listView.setOnItemClickListener((parent, view, position, id) -> {
 
+
             String item = (String)stringArrayAdapter.getItem(position);
             boolean blnFound = tempArrayList.contains(item);
             if (blnFound==true)
             {
                 tempArrayList.remove(item);
-                view.setBackgroundColor(Color.parseColor("GREEN"));
+
+                view.setBackgroundResource(R.color.pressed_color);
             }
             else
             {
                 tempArrayList.add(item);
-                view.setBackgroundColor(Color.red(1));
+                view.setBackgroundResource(R.color.white);
             }
 
             view.setSelected(true);
@@ -125,23 +128,57 @@ public class MainActivity extends AppCompatActivity {
         populateList();
 
     }
-    public void removeItemFromListView(String item)
+
+    public void removeItemFromListView(String item,AdapterView<?> parent)
     {
         tempArrayList.remove(item);
         stringArrayList.remove(item);
         stringArrayAdapter.notifyDataSetChanged();
+        checkClickedItems(parent);
+
     }
+
+    public void checkClickedItems(AdapterView<?> parent)
+    {
+        for (int i = 0; i<stringArrayList.size();i++)
+        {
+            View v = parent.getChildAt(i);
+        String item = (String)stringArrayAdapter.getItem(i);
+        boolean blnFound = tempArrayList.contains(item);
+
+        if (blnFound==true)
+        {
+
+            v.setBackgroundResource(R.color.white);
+        }
+        else
+        {
+            v.setBackgroundResource(R.color.pressed_color);
+        }
+        }
+    }
+
     public void hideSoftKeyboard(View view){
         InputMethodManager imm =(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+    public void resetApp(View view)
+    {
+        stringArrayList.clear();
+        //stringArrayAdapter.clear();
+        tempArrayList.clear();
+        stringArrayAdapter.notifyDataSetChanged();
+
     }
     public void populateList()
     {
         if (!notes.getText().toString().matches(""))
         {
-
-            stringArrayList.add(notes.getText().toString());
+            AdapterView<?> parent;
+            stringArrayList.add(0,notes.getText().toString());
             tempArrayList.add(notes.getText().toString());
+            View v = listView.getChildAt(0);
+            v.setBackgroundResource(R.color.white);
             stringArrayAdapter.notifyDataSetChanged();
             //hideSoftKeyboard(findViewById(android.R.id.content));
             notes.setText(null);
