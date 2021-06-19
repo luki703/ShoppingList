@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -65,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 Log.d( "AlertDialog", "Positive" );
-                                removeItemFromListView(item, parent);
+                                removeItemFromListView(item);
 
                                 dialog.dismiss();
                             }
@@ -127,60 +126,64 @@ public class MainActivity extends AppCompatActivity {
     {
         populateList();
 
+
     }
 
-    public void removeItemFromListView(String item,AdapterView<?> parent)
+    public void removeItemFromListView(String item)
     {
         tempArrayList.remove(item);
         stringArrayList.remove(item);
         stringArrayAdapter.notifyDataSetChanged();
-        checkClickedItems(parent);
+        checkClickedItems();//podejrzane
 
     }
 
-    public void checkClickedItems(AdapterView<?> parent)
+    public void checkClickedItems()
     {
+        //hideSoftKeyboard(findViewById(android.R.id.content));
         for (int i = 0; i<stringArrayList.size();i++)
         {
-            View v = parent.getChildAt(i);
+            View v = listView.getChildAt(i);
         String item = (String)stringArrayAdapter.getItem(i);
         boolean blnFound = tempArrayList.contains(item);
 
         if (blnFound==true)
         {
-
+            if (v!=null)
             v.setBackgroundResource(R.color.white);
         }
         else
         {
+            if (v!=null)
             v.setBackgroundResource(R.color.pressed_color);
         }
         }
+
     }
 
     public void hideSoftKeyboard(View view){
         InputMethodManager imm =(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
-    public void resetApp(View view)
+    public void resetApp(View view)//działa
     {
         stringArrayList.clear();
-        //stringArrayAdapter.clear();
         tempArrayList.clear();
+        stringArrayAdapter.clear();
         stringArrayAdapter.notifyDataSetChanged();
 
     }
-    public void populateList()
+    public void populateList()//działa ale zle zaznacza po dodaniu
     {
         if (!notes.getText().toString().matches(""))
         {
-            AdapterView<?> parent;
+
             stringArrayList.add(0,notes.getText().toString());
             tempArrayList.add(notes.getText().toString());
-            View v = listView.getChildAt(0);
-            v.setBackgroundResource(R.color.white);
+            checkClickedItems();
             stringArrayAdapter.notifyDataSetChanged();
-            //hideSoftKeyboard(findViewById(android.R.id.content));
+
+
             notes.setText(null);
 
 
