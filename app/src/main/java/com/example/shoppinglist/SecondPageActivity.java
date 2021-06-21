@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -22,33 +23,28 @@ import java.util.Set;
 
 public class SecondPageActivity extends AppCompatActivity implements LifecycleObserver{
 
-    static String storageKey = "com.lukasz.ShoppingList.key2";
+    static String storageKey = "com.lukasz.ShoppingList.tempArrayList";
     private ListView listView;
     private ArrayList<String> stringArrayList;
     private ArrayAdapter<String> stringArrayAdapter;
     private ArrayList<String> tempArrayList;
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
+    private Button menuBtn;
 
 
-    @Override//pokombinowac z tym albo ze znikaniem klawiatury
+    @Override
     protected void onResume() {
         super.onResume();
-        //checkClickedItems();
-        //Toast.makeText(getApplicationContext(), "resume!",
-        //  Toast.LENGTH_LONG).show();
-        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+
         Set<String> sourceSet = sharedPref.getStringSet(storageKey, new HashSet<>());
         tempArrayList = new ArrayList<>(sourceSet);
-
-        checkClickedItems();
-
     }
 
     protected void onPause() {
         super.onPause();
-        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-        editor = sharedPref.edit();
+
+
         Set<String> foo = new HashSet<String>(tempArrayList);
         editor.putStringSet(storageKey,foo);
         editor.commit();
@@ -61,6 +57,9 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
         super.onCreate(savedInstanceState);
         setContentView(R.layout.second_activity);
         Intent intent = getIntent();
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
+        menuBtn = this.findViewById(R.id.menuBtn);
         stringArrayList = intent.getStringArrayListExtra("stringArrayList");
         listView = this.findViewById(R.id.listView);
 
@@ -71,6 +70,14 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
 
         listView.setAdapter(stringArrayAdapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+
+        menuBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayMainMenu();
+
+            }
+        });
 
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -126,9 +133,6 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
 
 
 
-
-
-
     }
 
 
@@ -138,6 +142,7 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
         tempArrayList.remove(item);
         stringArrayList.remove(item);
         checkClickedItems();
+
 
     }
 
@@ -178,6 +183,11 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
     {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putStringArrayListExtra("tempArrayList", tempArrayList);
+        startActivity(intent);
+    }
+    public void displayMainMenu()
+    {
+        Intent intent = new Intent(this, MainMenu.class);
         startActivity(intent);
     }
 

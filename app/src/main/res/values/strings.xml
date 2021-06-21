@@ -13,4 +13,5 @@
     <string name="alertDialogNegative">Cofnij</string>
     <string name="restartBtnText">Wyczyść listę</string>
     <string name="nextBtnText">zapisz</string>
+    <string name="newListTitle">Wpisz tutaj tytuł nowej listy</string>
 </resources>

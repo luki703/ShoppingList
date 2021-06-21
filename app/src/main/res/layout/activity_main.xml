@@ -7,14 +7,15 @@
     tools:context=".MainActivity"
     tools:visibility="visible">
 
+
     <LinearLayout
         android:id="@+id/linearUpView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent"
-        >
+        app:layout_constraintTop_toTopOf="parent">
+
 
 
         <EditText
@@ -31,7 +32,7 @@
 
         <Button
             android:id="@+id/saveBtn"
-            android:layout_width="120dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="saveList"

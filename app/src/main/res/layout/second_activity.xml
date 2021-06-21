@@ -27,11 +27,11 @@
         android:layout_height="wrap_content"
         android:onClick="editShopListActivity"
         android:text="@string/getBackBtn"
-        app:layout_constraintBottom_toTopOf="@+id/MenuBtn"
+        app:layout_constraintBottom_toTopOf="@+id/menuBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
     <Button
-        android:id="@+id/MenuBtn"
+        android:id="@+id/menuBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/mainMenuBtn"

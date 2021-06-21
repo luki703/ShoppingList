@@ -17,6 +17,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,13 +26,19 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity {
 
     private EditText notes;
-    private String storageKey = "com.lukasz.ShoppingList.key1";
+    private String storageKey = "com.lukasz.ShoppingList.";
+    private String myTitle="current";
+
     private ListView listView;
     private ArrayList<String> stringArrayList;
     private ArrayAdapter<String> stringArrayAdapter;
     private Button nextBtn;
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
+    private String title;
+
+    public MainActivity() {
+    }
 
     @Override
     protected void onPause() {
@@ -38,8 +46,14 @@ public class MainActivity extends AppCompatActivity {
         sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         editor = sharedPref.edit();
         Set<String> foo = new HashSet<String>(stringArrayList);
-        editor.putStringSet(storageKey,foo);
+        editor.putStringSet(storageKey+title,foo);
+        editor.putString(myTitle,title);
         editor.commit();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -47,27 +61,30 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Context context = MainActivity.this;
-        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-        Set<String> sourceSet = sharedPref.getStringSet(storageKey, new HashSet<>());
-        stringArrayList = new ArrayList<String>(sourceSet);
+        //storageKey=storageKey+myTitle;
         notes=this.findViewById(R.id.notes);
         listView = this.findViewById(R.id.listView);
         nextBtn = this.findViewById(R.id.nextBtn);
-        //stringArrayList = new ArrayList<String>();
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        String current = sharedPref.getString(myTitle,"");
+        Intent intent = getIntent();
+        if (intent.getStringExtra("title")!=null)
+        {title = intent.getStringExtra("title");}
+        else title = current;
+        Set<String> sourceSet = sharedPref.getStringSet(storageKey+title, new HashSet<>());
+        //notes.setText(storageKey+title);
+        stringArrayList = new ArrayList<String>(sourceSet);
         stringArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringArrayList);
 
         stringArrayAdapter.notifyDataSetChanged();
         listView.setAdapter(stringArrayAdapter);
-        //listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+
         notes.requestFocus();
 
-
-
-        stringArrayAdapter.notifyDataSetChanged();
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                populateList();
                 openShopListActivity();
             }
         });
