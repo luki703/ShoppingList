@@ -1,14 +1,16 @@
 <resources>
     <string name="app_name">Shopping List</string>
-    <string name="saveBtn">Dodaj do listy</string>
+    <string name="saveBtn">+</string>
     <string name="notesDefaultText">Wpisz tutaj artykuł</string>
     <string name="editTextTitle">Tytuł</string>
     <string name="SecondPageButton">Przycisk</string>
     <string name="SecondPageTitleText">Tytuł</string>
-    <string name="done">done</string>
+    <string name="getBackBtn">Cofnij</string>
+    <string name="mainMenuBtn">Menu główne</string>
     <string name="alertDialogText">Usunąć artykuł?</string>
     <string name="alertDialogTitle">Alert</string>
     <string name="alertDialogPositive">Usuń</string>
     <string name="alertDialogNegative">Cofnij</string>
-    <string name="restartBtnText">Skasuj listę</string>
+    <string name="restartBtnText">Wyczyść listę</string>
+    <string name="nextBtnText">zapisz</string>
 </resources>

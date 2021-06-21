@@ -4,32 +4,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    tools:visibility="visible">
 
-    <Button
-        android:id="@+id/saveNotes"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:id="@+id/linearUpView"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:onClick="saveList"
-        android:text="@string/saveBtn"
-        app:layout_constraintBottom_toTopOf="@+id/listView"
-        app:layout_constraintTop_toBottomOf="@+id/notes" />
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        >
 
-    <EditText
-        android:id="@+id/notes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:ems="10"
-        android:gravity="start|top"
-        android:hint="@string/notesDefaultText"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        android:focusable="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/notes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:ems="10"
+            android:focusable="true"
+            android:gravity="start|top"
+            android:hint="@string/notesDefaultText"
+            android:importantForAutofill="no"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/saveBtn"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="saveList"
+
+            android:text="@string/saveBtn"
+            app:layout_constraintVertical_bias="0.0"
+            tools:layout_editor_absoluteX="0dp" />
+
+    </LinearLayout>
 
     <ListView
         android:id="@+id/listView"
@@ -37,12 +48,20 @@
         android:layout_height="0dp"
         android:choiceMode="multipleChoice"
         android:dividerHeight="1dp"
-        android:scrollbars="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/RestartBtn"
-        app:layout_constraintTop_toBottomOf="@+id/saveNotes"
+        app:layout_constraintBottom_toTopOf="@+id/nextBtn"
+        app:layout_constraintTop_toBottomOf="@+id/linearUpView"
         app:layout_constraintVertical_bias="0.0"
-        tools:layout_editor_absoluteX="16dp"
-         />
+        tools:layout_editor_absoluteX="0dp">
+
+    </ListView>
+
+    <Button
+        android:id="@+id/nextBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/nextBtnText"
+        app:layout_constraintBottom_toTopOf="@+id/RestartBtn"
+        app:layout_constraintTop_toBottomOf="@+id/listView" />
 
     <Button
         android:id="@+id/RestartBtn"
@@ -53,8 +72,7 @@
         android:onClick="resetApp"
         android:text="@string/restartBtnText"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/listView" />
-
+        app:layout_constraintTop_toBottomOf="@+id/nextBtn"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

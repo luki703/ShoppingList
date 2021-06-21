@@ -1,118 +1,187 @@
 package com.example.shoppinglist;
 
-import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LifecycleObserver;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
-public class SecondPageActivity extends AppCompatActivity {
+public class SecondPageActivity extends AppCompatActivity implements LifecycleObserver{
 
-    private EditText notes;
+    static String storageKey = "com.lukasz.ShoppingList.key2";
     private ListView listView;
     private ArrayList<String> stringArrayList;
-    //private String[] stringArrayList;
     private ArrayAdapter<String> stringArrayAdapter;
+    private ArrayList<String> tempArrayList;
+    private SharedPreferences sharedPref;
+    private SharedPreferences.Editor editor;
+
+
+    @Override//pokombinowac z tym albo ze znikaniem klawiatury
+    protected void onResume() {
+        super.onResume();
+        //checkClickedItems();
+        //Toast.makeText(getApplicationContext(), "resume!",
+        //  Toast.LENGTH_LONG).show();
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        Set<String> sourceSet = sharedPref.getStringSet(storageKey, new HashSet<>());
+        tempArrayList = new ArrayList<>(sourceSet);
+
+        checkClickedItems();
+
+    }
+
+    protected void onPause() {
+        super.onPause();
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
+        Set<String> foo = new HashSet<String>(tempArrayList);
+        editor.putStringSet(storageKey,foo);
+        editor.commit();
+    }
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.second_activity);
+        Intent intent = getIntent();
+        stringArrayList = intent.getStringArrayListExtra("stringArrayList");
+        listView = this.findViewById(R.id.listView);
 
+        tempArrayList = new ArrayList<String>();
+        stringArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringArrayList);
 
-        Context context = SecondPageActivity.this;
-        notes=this.findViewById(R.id.notes);
-        /*for (int i =0; i<=10;i++){
-            stringArrayList.add("item"+i);
-            stringArrayAdapter.notifyDataSetChanged();
-        }*/
-        listView=this.findViewById(R.id.listView_data);
-        stringArrayAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_multiple_choice,stringArrayList);
+        stringArrayAdapter.notifyDataSetChanged();
+
         listView.setAdapter(stringArrayAdapter);
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
-
-        notes.setOnKeyListener(new View.OnKeyListener() {
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction()==KeyEvent.ACTION_DOWN && keyCode==KeyEvent.KEYCODE_ENTER)
-                {populateList();
-                    return true;}
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                String item = (String)stringArrayAdapter.getItem(position);
+                AlertDialog alertDialog = new AlertDialog.Builder(SecondPageActivity.this).create();
+                alertDialog.setTitle(getString(R.string.alertDialogTitle));
+                alertDialog.setMessage(getString(R.string.alertDialogText));
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.alertDialogPositive),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.d( "AlertDialog", "Positive" );
+                                removeItemFromListView(item);
+
+                                dialog.dismiss();
+                            }
+                        });
+
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.alertDialogNegative),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.d( "AlertDialog", "Negative" );
+
+                                dialog.dismiss();
+
+                            }
+                        });
+                alertDialog.show();
 
                 return false;
             }
         });
+        listView.setOnItemClickListener((parent, view, position, id) -> {
 
-        //String notesString = sharedPref.getString(notesKey,"");
-        //notes.setText(notesString);
-        //noteData = (NoteData) getIntent().getExtras().getSerializable(SecondPageActivity.ADDITIONAL_DATA);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu,menu);
-        return true;
-        //return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id==R.id.item_done)
-        {
-            String itemSelected = "Selected items: \n";
-            for (int i=0;i<listView.getCount();i++)
+            String item = (String)stringArrayAdapter.getItem(position);
+            boolean blnFound = tempArrayList.contains(item);
+            if (blnFound==true)
             {
-                if (listView.isItemChecked(i))
-                {
-                    itemSelected += listView.getItemAtPosition(i) +"\n";
-                }
+                tempArrayList.remove(item);
+
+                view.setBackgroundResource(R.color.white);
             }
-            Toast.makeText(this,itemSelected,Toast.LENGTH_SHORT).show();
-        }
-        return super.onOptionsItemSelected(item);
+            else
+            {
+                tempArrayList.add(item);
+                view.setBackgroundResource(R.color.pressed_color);
+            }
+
+            view.setSelected(true);
+            checkClickedItems();
+            stringArrayAdapter.notifyDataSetChanged();
+        });
+
+
+
+
+
+
     }
 
-    public void saveList(View view)
+
+
+    public void removeItemFromListView(String item)
     {
-        populateList();
+        tempArrayList.remove(item);
+        stringArrayList.remove(item);
+        checkClickedItems();
 
     }
+
+    public void checkClickedItems()
+    {
+        for (int i = 0; i<stringArrayList.size();i++)
+        {
+            View v = listView.getChildAt(i);
+            String item = (String)stringArrayAdapter.getItem(i);
+            boolean blnFound = tempArrayList.contains(item);
+
+            if (blnFound==true)
+            {       if (v!=null)
+                    v.setBackgroundResource(R.color.pressed_color);
+            }
+            else
+            {       if (v!=null)
+                    v.setBackgroundResource(R.color.white);
+            }
+            stringArrayAdapter.notifyDataSetChanged();
+        }
+    }
+
+
     public void hideSoftKeyboard(View view){
         InputMethodManager imm =(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
-    public void populateList()
+    public void resetApp(View view)
     {
-        if (!notes.getText().toString().matches(""))
-        {
-
-            stringArrayList.add(notes.getText().toString());
-
-            stringArrayAdapter.notifyDataSetChanged();
-            //hideSoftKeyboard(findViewById(android.R.id.content));
-            notes.setText(null);
-            notes.callOnClick();
-
-
-        }
-
-
+        stringArrayList.clear();
+        tempArrayList.clear();
+        stringArrayAdapter.clear();
+        stringArrayAdapter.notifyDataSetChanged();
 
     }
+    public void editShopListActivity(View view)
+    {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putStringArrayListExtra("tempArrayList", tempArrayList);
+        startActivity(intent);
+    }
+
+
+
 
 }
