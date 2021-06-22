@@ -2,6 +2,7 @@ package com.example.shoppinglist;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LifecycleObserver;
 
 import android.content.Context;
@@ -16,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,22 +33,27 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
     private Button menuBtn;
+    private String title;
+    private String myTitle="current";
+    private Toolbar toolbar;
 
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        Set<String> sourceSet = sharedPref.getStringSet(storageKey, new HashSet<>());
+        Set<String> sourceSet = sharedPref.getStringSet(storageKey+title, new HashSet<>());
         tempArrayList = new ArrayList<>(sourceSet);
     }
 
     protected void onPause() {
         super.onPause();
 
-
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
         Set<String> foo = new HashSet<String>(tempArrayList);
-        editor.putStringSet(storageKey,foo);
+        editor.putStringSet(storageKey+title,foo);
+        editor.putString(myTitle,title);
         editor.commit();
     }
 
@@ -56,9 +63,17 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.second_activity);
-        Intent intent = getIntent();
+
         sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-        editor = sharedPref.edit();
+        toolbar = this.findViewById(R.id.menuToolbar);
+        String current = sharedPref.getString(myTitle,"");
+        Intent intent = getIntent();
+        if (intent.getStringExtra("title")!=null)
+        {title = intent.getStringExtra("title");}
+        else title = current;
+        toolbar.setTitle(title);
+        setSupportActionBar(toolbar);
+
         menuBtn = this.findViewById(R.id.menuBtn);
         stringArrayList = intent.getStringArrayListExtra("stringArrayList");
         listView = this.findViewById(R.id.listView);

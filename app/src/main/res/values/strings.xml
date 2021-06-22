@@ -14,4 +14,6 @@
     <string name="restartBtnText">Wyczyść listę</string>
     <string name="nextBtnText">zapisz</string>
     <string name="newListTitle">Wpisz tutaj tytuł nowej listy</string>
+    <string name="mainMenuTitle">Listy</string>
+
 </resources>

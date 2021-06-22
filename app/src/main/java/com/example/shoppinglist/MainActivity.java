@@ -2,6 +2,7 @@ package com.example.shoppinglist;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
     private String title;
+    private Toolbar toolbar;
 
     public MainActivity() {
     }
@@ -65,14 +67,18 @@ public class MainActivity extends AppCompatActivity {
         notes=this.findViewById(R.id.notes);
         listView = this.findViewById(R.id.listView);
         nextBtn = this.findViewById(R.id.nextBtn);
+        toolbar = this.findViewById(R.id.menuToolbar);
+
+
         sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         String current = sharedPref.getString(myTitle,"");
         Intent intent = getIntent();
         if (intent.getStringExtra("title")!=null)
         {title = intent.getStringExtra("title");}
         else title = current;
+        toolbar.setTitle(title);
+        setSupportActionBar(toolbar);
         Set<String> sourceSet = sharedPref.getStringSet(storageKey+title, new HashSet<>());
-        //notes.setText(storageKey+title);
         stringArrayList = new ArrayList<String>(sourceSet);
         stringArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringArrayList);
 
@@ -85,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 populateList();
-                openShopListActivity();
+                openShopListActivity(title);
             }
         });
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -171,10 +177,11 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-    public void openShopListActivity()
+    public void openShopListActivity(String item)
     {
         Intent intent = new Intent(this, SecondPageActivity.class);
         intent.putStringArrayListExtra("stringArrayList", stringArrayList);
+        intent.putExtra("title", item);
         startActivity(intent);
     }
 
