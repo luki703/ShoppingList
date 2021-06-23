@@ -10,9 +10,10 @@
     <string name="alertDialogText">Usunąć artykuł?</string>
     <string name="alertDialogTitle">Alert</string>
     <string name="alertDialogPositive">Usuń</string>
-    <string name="alertDialogNegative">Cofnij</string>
+    <string name="alertDialogNegative">Wstecz</string>
     <string name="restartBtnText">Wyczyść listę</string>
-    <string name="nextBtnText">zapisz</string>
+    <string name="restartClicked">Wyczyść zaznaczenia</string>
+    <string name="nextBtnText">dalej</string>
     <string name="newListTitle">Wpisz tutaj tytuł nowej listy</string>
     <string name="mainMenuTitle">Listy</string>
 

@@ -12,7 +12,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -30,6 +30,7 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
     private ArrayList<String> stringArrayList;
     private ArrayAdapter<String> stringArrayAdapter;
     private ArrayList<String> tempArrayList;
+    private ArrayList<Integer> indexTempArray;
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
     private Button menuBtn;
@@ -57,34 +58,33 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
         editor.commit();
     }
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.second_activity);
+        initiateData();
 
-        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-        toolbar = this.findViewById(R.id.menuToolbar);
-        String current = sharedPref.getString(myTitle,"");
-        Intent intent = getIntent();
-        if (intent.getStringExtra("title")!=null)
-        {title = intent.getStringExtra("title");}
-        else title = current;
-        toolbar.setTitle(title);
-        setSupportActionBar(toolbar);
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+                        checkClickedItems();
+                }
+            }
 
-        menuBtn = this.findViewById(R.id.menuBtn);
-        stringArrayList = intent.getStringArrayListExtra("stringArrayList");
-        listView = this.findViewById(R.id.listView);
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                listView.setOnItemClickListener((parent, lvView, position, id) -> {
+                    highlineItemListview(position);
+                    Toast.makeText(getApplicationContext(),"position"+position,Toast.LENGTH_SHORT).show();
 
-        tempArrayList = new ArrayList<String>();
-        stringArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringArrayList);
+                });
+            }
+        });
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            highlineItemListview(position);
 
-        stringArrayAdapter.notifyDataSetChanged();
-
-        listView.setAdapter(stringArrayAdapter);
-        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        });
 
         menuBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,105 +94,97 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
             }
         });
 
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                String item = (String)stringArrayAdapter.getItem(position);
-                AlertDialog alertDialog = new AlertDialog.Builder(SecondPageActivity.this).create();
-                alertDialog.setTitle(getString(R.string.alertDialogTitle));
-                alertDialog.setMessage(getString(R.string.alertDialogText));
-                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.alertDialogPositive),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Log.d( "AlertDialog", "Positive" );
-                                removeItemFromListView(item);
-
-                                dialog.dismiss();
-                            }
-                        });
-
-                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.alertDialogNegative),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Log.d( "AlertDialog", "Negative" );
-
-                                dialog.dismiss();
-
-                            }
-                        });
-                alertDialog.show();
-
-                return false;
-            }
-        });
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-
-            String item = (String)stringArrayAdapter.getItem(position);
-            boolean blnFound = tempArrayList.contains(item);
-            if (blnFound==true)
-            {
-                tempArrayList.remove(item);
-
-                view.setBackgroundResource(R.color.white);
-            }
-            else
-            {
-                tempArrayList.add(item);
-                view.setBackgroundResource(R.color.pressed_color);
-            }
-
-            view.setSelected(true);
-            checkClickedItems();
-            stringArrayAdapter.notifyDataSetChanged();
-        });
-
-
 
     }
 
+    private void initiateData() {
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        toolbar = this.findViewById(R.id.menuToolbar);
+        menuBtn = this.findViewById(R.id.menuBtn);
+        listView = this.findViewById(R.id.listView);
+        String current = sharedPref.getString(myTitle,"");
+        indexTempArray = new ArrayList<Integer>();
+        Intent intent = getIntent();
+        if (intent.getStringExtra("title")!=null)
+        {title = intent.getStringExtra("title");}
+        else title = current;
 
+        toolbar.setTitle(title);
+        setSupportActionBar(toolbar);
 
-    public void removeItemFromListView(String item)
-    {
-        tempArrayList.remove(item);
-        stringArrayList.remove(item);
+        stringArrayList = intent.getStringArrayListExtra("stringArrayList");
+        tempArrayList = new ArrayList<String>();
+        stringArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringArrayList);
+
+        stringArrayAdapter.notifyDataSetChanged();
+        listView.setAdapter(stringArrayAdapter);
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        Set<String> sourceSet = sharedPref.getStringSet(storageKey+title, new HashSet<>());
+        tempArrayList = new ArrayList<>(sourceSet);
+        populateIndexTempArray();
         checkClickedItems();
 
-
+    }
+    public void populateIndexTempArray()
+    {
+        for (int i = 0; i<stringArrayAdapter.getCount(); i++)
+        {
+            String item = stringArrayAdapter.getItem(i);
+            if (tempArrayList.contains(item))
+            {
+                indexTempArray.add(i);
+            }
+        }
     }
 
     public void checkClickedItems()
     {
-        for (int i = 0; i<stringArrayList.size();i++)
-        {
+
+        for (int i=0; i<listView.getCount();i++) {
             View v = listView.getChildAt(i);
-            String item = (String)stringArrayAdapter.getItem(i);
-            boolean blnFound = tempArrayList.contains(item);
-
-            if (blnFound==true)
-            {       if (v!=null)
-                    v.setBackgroundResource(R.color.pressed_color);
+            if (v!=null)
+            {
+                v.setBackgroundResource(R.color.white);
             }
-            else
-            {       if (v!=null)
-                    v.setBackgroundResource(R.color.white);
-            }
-            stringArrayAdapter.notifyDataSetChanged();
         }
-    }
+        indexTempArray.forEach((n) -> {
+            if (n-listView.getFirstVisiblePosition()>=0)
+            {
+            View v = listView.getChildAt(n-listView.getFirstVisiblePosition());
+            Toast.makeText(getApplicationContext(),"first:"+listView.getFirstVisiblePosition(),Toast.LENGTH_SHORT).show();
+            if (v!=null)
+
+                    v.setBackgroundResource(R.color.pressed_color);
 
 
-    public void hideSoftKeyboard(View view){
-        InputMethodManager imm =(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            stringArrayAdapter.notifyDataSetChanged();
+
+                    }});
     }
-    public void resetApp(View view)
+    public void highlineItemListview(int position)
     {
-        stringArrayList.clear();
-        tempArrayList.clear();
-        stringArrayAdapter.clear();
-        stringArrayAdapter.notifyDataSetChanged();
+        checkClickedItems();
+        String item = (String)stringArrayAdapter.getItem(position);
+        boolean blnFound = tempArrayList.contains(item);
+        if (blnFound==true)
+        {
+            tempArrayList.remove(item);
+            indexTempArray.remove((Integer) position);
+        }
+        else
+        {
+            tempArrayList.add(item);
+            indexTempArray.add(position);
+        }
+        checkClickedItems();
 
+        stringArrayAdapter.notifyDataSetChanged();
+    }
+    public void clearAllClicked(View view)
+    {
+        tempArrayList.clear();
+        indexTempArray.clear();
+        checkClickedItems();
     }
     public void editShopListActivity(View view)
     {

@@ -17,33 +17,46 @@
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:choiceMode="multipleChoice"
+
         android:dividerHeight="1dp"
-        app:layout_constraintBottom_toTopOf="@+id/BackBtn"
+        app:layout_constraintBottom_toTopOf="@+id/linearDownView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/menuToolbar"
         app:layout_constraintVertical_bias="0.0"></ListView>
-
+    <LinearLayout
+        android:id="@+id/linearDownView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
     <Button
         android:id="@+id/BackBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:onClick="editShopListActivity"
         android:text="@string/getBackBtn"
-        app:layout_constraintBottom_toTopOf="@+id/menuBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+         />
     <Button
         android:id="@+id/menuBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:text="@string/mainMenuBtn"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+         />
+
+        <Button
+            android:id="@+id/restartClickedBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:onClick="clearAllClicked"
+            android:text="@string/restartClicked" />
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

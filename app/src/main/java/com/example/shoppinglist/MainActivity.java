@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
 
         stringArrayAdapter.notifyDataSetChanged();
         listView.setAdapter(stringArrayAdapter);
-
         notes.requestFocus();
 
         nextBtn.setOnClickListener(new View.OnClickListener() {
