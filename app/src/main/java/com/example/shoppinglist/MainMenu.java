@@ -74,20 +74,21 @@ public class MainMenu extends AppCompatActivity {
         addListBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                titleArrayList.add(newListEditTextTitle.getText());
-                Button button = new Button(context);
-                button.setText(newListEditTextTitle.getText());
-                buttonsList.add(button);
-                ll.addView(button, lp);
+                if (newListEditTextTitle.getText()!=null) {
+                    titleArrayList.add(newListEditTextTitle.getText());
+                    Button button = new Button(context);
+                    button.setText(newListEditTextTitle.getText());
+                    buttonsList.add(button);
+                    ll.addView(button, lp);
 
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        openEditListActivity(button.getText().toString());
-                    }
-                });
-                newListEditTextTitle.setText("");
-
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            openEditListActivity(button.getText().toString());
+                        }
+                    });
+                    newListEditTextTitle.setText("");
+                }
             }
         });
 
