@@ -1,7 +1,6 @@
 package com.example.shoppinglist;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,12 +10,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -103,12 +99,18 @@ public class MainMenu extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu,menu);
+        menu.findItem(R.id.backIconBtn).setVisible(false);
+        menu.findItem(R.id.menuIconBtn).setVisible(false);
+        menu.findItem(R.id.checkIconBtn).setVisible(false);
+        menu.findItem(R.id.clearAllIconBtn).setVisible(false);
+        menu.findItem(R.id.editIconBtn).setVisible(false);
         if (!isDeleteMode){
-            menu.findItem(R.id.hiddenBackBtn).setVisible(false);
+            menu.findItem(R.id.hiddenDoneBtn).setVisible(false);
             menu.findItem(R.id.deleteBtn).setVisible(true);
 
+
         }else if(isDeleteMode){
-            menu.findItem(R.id.hiddenBackBtn).setVisible(true);
+            menu.findItem(R.id.hiddenDoneBtn).setVisible(true);
             menu.findItem(R.id.deleteBtn).setVisible(false);
         }
         return true;
@@ -125,7 +127,7 @@ public class MainMenu extends AppCompatActivity {
                 toolbar.setTitle("Kasowanie");
                 invalidateOptionsMenu();
                 return true;
-            case R.id.hiddenBackBtn:
+            case R.id.hiddenDoneBtn:
                 toolbar.setBackgroundResource(R.color.light_blue);
                 isDeleteMode=false;
                 toolbar.setTitle(R.string.mainMenuTitle);

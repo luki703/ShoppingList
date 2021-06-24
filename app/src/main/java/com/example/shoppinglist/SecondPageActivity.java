@@ -1,5 +1,6 @@
 package com.example.shoppinglist;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LifecycleObserver;
@@ -8,7 +9,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -28,7 +33,7 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
     private ArrayList<Integer> indexTempArray;
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
-    private Button menuBtn;
+    private boolean isDeleteMode = false;
     private String title;
     private String myTitle="current";
     private Toolbar toolbar;
@@ -58,6 +63,8 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
         super.onCreate(savedInstanceState);
         setContentView(R.layout.second_activity);
         initiateData();
+        ViewGroup second = this.findViewById(R.id.mainLayout);
+        second.invalidate();
 
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -80,18 +87,66 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
 
         });
 
-        menuBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu,menu);
+        menu.findItem(R.id.clearAllIconBtn).setVisible(false);
+        menu.findItem(R.id.backIconBtn).setVisible(false);
+        menu.findItem(R.id.checkIconBtn).setVisible(false);
+
+        if (!isDeleteMode){
+
+            menu.findItem(R.id.deleteBtn).setVisible(true);
+            menu.findItem(R.id.hiddenDoneBtn).setVisible(false);
+
+            menu.findItem(R.id.menuIconBtn).setVisible(true);
+            menu.findItem(R.id.editIconBtn).setVisible(true);
+
+
+        }else if(isDeleteMode){
+            menu.findItem(R.id.hiddenDoneBtn).setVisible(true);
+            menu.findItem(R.id.deleteBtn).setVisible(false);
+            menu.findItem(R.id.menuIconBtn).setVisible(false);
+            menu.findItem(R.id.editIconBtn).setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.deleteBtn:
+                toolbar.setBackgroundResource(R.color.red);
+                isDeleteMode=true;
+                toolbar.setTitle("Kasowanie");
+                invalidateOptionsMenu();
+                return true;
+            case R.id.hiddenDoneBtn:
+                toolbar.setBackgroundResource(R.color.light_blue);
+
+                isDeleteMode=false;
+                toolbar.setTitle(title);
+                invalidateOptionsMenu();
+                return true;
+            case R.id.menuIconBtn:
                 displayMainMenu();
-            }
-        });
+                return true;
+            case R.id.editIconBtn:
+                editShopListActivity();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void initiateData() {
         sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         toolbar = this.findViewById(R.id.menuToolbar);
-        menuBtn = this.findViewById(R.id.menuBtn);
         listView = this.findViewById(R.id.listView);
         String current = sharedPref.getString(myTitle,"");
         indexTempArray = new ArrayList<Integer>();
@@ -175,7 +230,7 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
         indexTempArray.clear();
         checkClickedItems();
     }
-    public void editShopListActivity(View view)
+    public void editShopListActivity()
     {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putStringArrayListExtra("tempArrayList", tempArrayList);
