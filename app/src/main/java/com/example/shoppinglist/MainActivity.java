@@ -62,29 +62,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //storageKey=storageKey+myTitle;
-        notes=this.findViewById(R.id.notes);
-        listView = this.findViewById(R.id.listView);
-        nextBtn = this.findViewById(R.id.nextBtn);
-        toolbar = this.findViewById(R.id.menuToolbar);
-
-
-        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-        String current = sharedPref.getString(myTitle,"");
-        Intent intent = getIntent();
-        if (intent.getStringExtra("title")!=null)
-        {title = intent.getStringExtra("title");}
-        else title = current;
-        toolbar.setTitle(title);
-        setSupportActionBar(toolbar);
-        Set<String> sourceSet = sharedPref.getStringSet(storageKey+title, new HashSet<>());
-        stringArrayList = new ArrayList<String>(sourceSet);
-        stringArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringArrayList);
-
-        stringArrayAdapter.notifyDataSetChanged();
-        listView.setAdapter(stringArrayAdapter);
-        notes.requestFocus();
+        initiateData();
 
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,27 +114,38 @@ public class MainActivity extends AppCompatActivity {
 
                 return false;
             }
-
         });
-
-
-
     }
 
+    private void initiateData() {
+        notes=this.findViewById(R.id.notes);
+        listView = this.findViewById(R.id.listView);
+        nextBtn = this.findViewById(R.id.nextBtn);
+        toolbar = this.findViewById(R.id.menuToolbar);
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        String current = sharedPref.getString(myTitle,"");
+        Intent intent = getIntent();
+        if (intent.getStringExtra("title")!=null)
+        {title = intent.getStringExtra("title");}
+        else title = current;
+        toolbar.setTitle(title);
+        setSupportActionBar(toolbar);
+        Set<String> sourceSet = sharedPref.getStringSet(storageKey+title, new HashSet<>());
+        stringArrayList = new ArrayList<String>(sourceSet);
+        stringArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringArrayList);
+
+        stringArrayAdapter.notifyDataSetChanged();
+        listView.setAdapter(stringArrayAdapter);
+        notes.requestFocus();
+    }
     public void saveList(View view)
     {
         populateList();
     }
-
     public void removeItemFromListView(String item)
     {
         stringArrayList.remove(item);
         stringArrayAdapter.notifyDataSetChanged();
-    }
-
-    public void hideSoftKeyboard(View view){
-        InputMethodManager imm =(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
     public void resetApp(View view)
     {

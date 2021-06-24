@@ -1,23 +1,18 @@
 package com.example.shoppinglist;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LifecycleObserver;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -71,16 +66,15 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
                         checkClickedItems();
                 }
             }
-
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 listView.setOnItemClickListener((parent, lvView, position, id) -> {
                     highlineItemListview(position);
-                    Toast.makeText(getApplicationContext(),"position"+position,Toast.LENGTH_SHORT).show();
 
                 });
             }
         });
+
         listView.setOnItemClickListener((parent, view, position, id) -> {
             highlineItemListview(position);
 
@@ -90,11 +84,8 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
             @Override
             public void onClick(View v) {
                 displayMainMenu();
-
             }
         });
-
-
     }
 
     private void initiateData() {
@@ -136,7 +127,6 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
             }
         }
     }
-
     public void checkClickedItems()
     {
 
@@ -151,7 +141,6 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
             if (n-listView.getFirstVisiblePosition()>=0)
             {
             View v = listView.getChildAt(n-listView.getFirstVisiblePosition());
-            Toast.makeText(getApplicationContext(),"first:"+listView.getFirstVisiblePosition(),Toast.LENGTH_SHORT).show();
             if (v!=null)
 
                     v.setBackgroundResource(R.color.pressed_color);
@@ -197,8 +186,4 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
         Intent intent = new Intent(this, MainMenu.class);
         startActivity(intent);
     }
-
-
-
-
 }

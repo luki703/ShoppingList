@@ -5,14 +5,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,6 +34,8 @@ public class MainMenu extends AppCompatActivity {
     private Button addListBtn;
     private LinearLayout ll;
     private LinearLayout.LayoutParams lp;
+    private boolean isDeleteMode = false;
+    private Toolbar toolbar;
 
     @Override
     protected void onPause() {
@@ -42,20 +50,12 @@ public class MainMenu extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.main_menu_activity);
         Context context = MainMenu.this;
-
-        titleArrayList = new ArrayList();
-        buttonsList = new ArrayList();
-        newListEditTextTitle = this.findViewById(R.id.newListEditTextTitle);
-        addListBtn = this.findViewById(R.id.addListBtn);
-        ll = (LinearLayout)findViewById(R.id.mainMenuLinearLayout);
-        lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        initiateData();
 
 
-        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-        Set<String> sourceSet = sharedPref.getStringSet(storageKey, new HashSet<>());
-        titleArrayList = new ArrayList<String>(sourceSet);
         for (Object item:titleArrayList) {
             Button button = new Button(context);
             button.setText(item.toString());
@@ -64,7 +64,13 @@ public class MainMenu extends AppCompatActivity {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (!isDeleteMode)
                     openEditListActivity(button.getText().toString());
+                    else
+                    {
+                        titleArrayList.remove(button.getText());
+                        ll.removeView(v);
+                    }
                 }
             });
 
@@ -89,9 +95,66 @@ public class MainMenu extends AppCompatActivity {
             }
         });
 
+
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu,menu);
+        if (!isDeleteMode){
+            menu.findItem(R.id.hiddenBackBtn).setVisible(false);
+            menu.findItem(R.id.deleteBtn).setVisible(true);
+
+        }else if(isDeleteMode){
+            menu.findItem(R.id.hiddenBackBtn).setVisible(true);
+            menu.findItem(R.id.deleteBtn).setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.deleteBtn:
+                toolbar.setBackgroundResource(R.color.red);
+                isDeleteMode=true;
+                toolbar.setTitle("Kasowanie");
+                invalidateOptionsMenu();
+                return true;
+            case R.id.hiddenBackBtn:
+                toolbar.setBackgroundResource(R.color.light_blue);
+                isDeleteMode=false;
+                toolbar.setTitle(R.string.mainMenuTitle);
+                invalidateOptionsMenu();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void initiateData()
+    {
+        titleArrayList = new ArrayList();
+        buttonsList = new ArrayList();
+        newListEditTextTitle = this.findViewById(R.id.newListEditTextTitle);
+        addListBtn = this.findViewById(R.id.addListBtn);
+        toolbar = this.findViewById(R.id.menuToolbar);
+        setSupportActionBar(toolbar);
+        ll = (LinearLayout)findViewById(R.id.mainMenuLinearLayout);
+        lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        Set<String> sourceSet = sharedPref.getStringSet(storageKey, new HashSet<>());
+        titleArrayList = new ArrayList<String>(sourceSet);
+
+
+    }
+
     public void openEditListActivity(String item)
     {
+
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("title", item);
         startActivity(intent);
