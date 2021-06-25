@@ -164,6 +164,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.checkIconBtn:
                 openShopListActivity(title);
                 return true;
+            case R.id.clearAllIconBtn:
+
+                stringArrayList.clear();
+                stringArrayAdapter.notifyDataSetChanged();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -203,12 +208,7 @@ public class MainActivity extends AppCompatActivity {
         stringArrayList.remove(item);
         stringArrayAdapter.notifyDataSetChanged();
     }
-    public void resetApp(View view)
-    {
-        stringArrayList.clear();
-        stringArrayAdapter.clear();
-        stringArrayAdapter.notifyDataSetChanged();
-    }
+  
     public void populateList()
     {
         if (!notes.getText().toString().matches(""))

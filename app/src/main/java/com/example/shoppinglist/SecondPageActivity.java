@@ -96,22 +96,8 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
         menu.findItem(R.id.clearAllIconBtn).setVisible(false);
         menu.findItem(R.id.backIconBtn).setVisible(false);
         menu.findItem(R.id.checkIconBtn).setVisible(false);
-
-        if (!isDeleteMode){
-
-            menu.findItem(R.id.deleteBtn).setVisible(true);
-            menu.findItem(R.id.hiddenDoneBtn).setVisible(false);
-
-            menu.findItem(R.id.menuIconBtn).setVisible(true);
-            menu.findItem(R.id.editIconBtn).setVisible(true);
-
-
-        }else if(isDeleteMode){
-            menu.findItem(R.id.hiddenDoneBtn).setVisible(true);
-            menu.findItem(R.id.deleteBtn).setVisible(false);
-            menu.findItem(R.id.menuIconBtn).setVisible(false);
-            menu.findItem(R.id.editIconBtn).setVisible(false);
-        }
+        menu.findItem(R.id.deleteBtn).setVisible(false);
+        menu.findItem(R.id.hiddenDoneBtn).setVisible(false);
         return true;
     }
 

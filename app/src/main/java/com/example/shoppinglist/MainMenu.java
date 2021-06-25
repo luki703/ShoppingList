@@ -74,7 +74,7 @@ public class MainMenu extends AppCompatActivity {
         addListBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (newListEditTextTitle.getText()!=null) {
+                if (!newListEditTextTitle.getText().toString().equals("")) {
                     titleArrayList.add(newListEditTextTitle.getText());
                     Button button = new Button(context);
                     button.setText(newListEditTextTitle.getText());
