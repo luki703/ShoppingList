@@ -92,12 +92,14 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu,menu);
+        inflater.inflate(R.menu.second_menu,menu);
         menu.findItem(R.id.clearAllIconBtn).setVisible(false);
         menu.findItem(R.id.backIconBtn).setVisible(false);
         menu.findItem(R.id.checkIconBtn).setVisible(false);
         menu.findItem(R.id.deleteBtn).setVisible(false);
         menu.findItem(R.id.hiddenDoneBtn).setVisible(false);
+        checkClickedItems();
+
         return true;
     }
 
@@ -136,6 +138,7 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
         listView = this.findViewById(R.id.listView);
         String current = sharedPref.getString(myTitle,"");
         indexTempArray = new ArrayList<Integer>();
+
         Intent intent = getIntent();
         if (intent.getStringExtra("title")!=null)
         {title = intent.getStringExtra("title");}
@@ -154,7 +157,6 @@ public class SecondPageActivity extends AppCompatActivity implements LifecycleOb
         Set<String> sourceSet = sharedPref.getStringSet(storageKey+title, new HashSet<>());
         tempArrayList = new ArrayList<>(sourceSet);
         populateIndexTempArray();
-        checkClickedItems();
 
     }
     public void populateIndexTempArray()

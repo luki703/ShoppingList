@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:title="backIconBtn"
+        android:id="@+id/backIconBtn"
+        android:icon="@drawable/ic_baseline_arrow_back_ios_24"
+        app:showAsAction="ifRoom"
+        />
+    <item
+        android:title="checkIconBtn"
+        android:id="@+id/checkIconBtn"
+        android:icon="@drawable/ic_baseline_check_box_24"
+        app:showAsAction="ifRoom"
+        />
+    <item
+        android:title="uncheckIconBtn"
+        android:id="@+id/unCheckIconBtn"
+        android:icon="@drawable/ic_baseline_check_box_outline_blank_24"
+        app:showAsAction="ifRoom"
+        />
+
+
+    <item
+        android:title="hidden"
+        android:id="@+id/hiddenDoneBtn"
+        android:icon="@drawable/ic_baseline_done_24"
+        app:showAsAction="ifRoom"
+        />
+    <item
+        android:title="clearAll"
+        android:icon="@drawable/ic_baseline_clear_all_24"
+        android:id="@+id/clearAllIconBtn"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:title="delete"
+        android:icon="@drawable/ic_delete_24"
+        android:id="@+id/deleteBtn"
+        app:showAsAction="ifRoom"/>
+
+</menu>

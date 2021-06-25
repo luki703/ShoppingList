@@ -16,13 +16,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+
+
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -32,11 +36,15 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText notes;
     private String storageKey = "com.lukasz.ShoppingList.";
+    static String storageTempKey = "com.lukasz.ShoppingList.tempArrayList";
     private String myTitle="current";
 
     private ListView listView;
     private ArrayList<String> stringArrayList;
     private ArrayAdapter<String> stringArrayAdapter;
+
+    private ArrayList<String> tempArrayList;
+    private ArrayList<Integer> indexTempArray;
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
     private String title;
@@ -52,23 +60,33 @@ public class MainActivity extends AppCompatActivity {
         sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         editor = sharedPref.edit();
         Set<String> foo = new HashSet<String>(stringArrayList);
-        editor.putStringSet(storageKey+title,foo);
-        editor.putString(myTitle,title);
+        editor.putStringSet(storageKey+title,foo);//stringArray
+        editor.putString(myTitle,title);//tittle
+        Set<String> tmp = new HashSet<String>(tempArrayList);//tempArrayList
+        editor.putStringSet(storageTempKey+title,tmp);
         editor.commit();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Set<String> sourceSet = sharedPref.getStringSet(storageTempKey+title, new HashSet<>());
+        tempArrayList = new ArrayList<>(sourceSet);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Context context = MainActivity.this;
         initiateData();
 
-
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                highLineItemListview(position);
+            }
+        });
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -100,6 +118,20 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+                    checkClickedItems();
+                }
+            }
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                checkClickedItems();
+            }
+        });
+
+
 
 
         notes.setOnKeyListener(new View.OnKeyListener() {
@@ -107,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction()==KeyEvent.ACTION_DOWN && keyCode==KeyEvent.KEYCODE_ENTER)
                 {populateList();
-                return true;}
+                    return true;}
 
 
                 return false;
@@ -118,16 +150,24 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu,menu);
-        menu.findItem(R.id.menuIconBtn).setVisible(false);
-        menu.findItem(R.id.editIconBtn).setVisible(false);
+        inflater.inflate(R.menu.activity_menu,menu);
+
         if (!isDeleteMode){
 
             menu.findItem(R.id.deleteBtn).setVisible(true);
             menu.findItem(R.id.clearAllIconBtn).setVisible(false);
             menu.findItem(R.id.backIconBtn).setVisible(true);
-            menu.findItem(R.id.checkIconBtn).setVisible(true);
             menu.findItem(R.id.hiddenDoneBtn).setVisible(false);
+            if (stringArrayList.size()!=tempArrayList.size())
+            {
+
+                menu.findItem(R.id.checkIconBtn).setVisible(true);
+                menu.findItem(R.id.unCheckIconBtn).setVisible(false);
+            }
+            else {
+                menu.findItem(R.id.checkIconBtn).setVisible(false);
+                menu.findItem(R.id.unCheckIconBtn).setVisible(true);
+            }
 
 
         }else if(isDeleteMode){
@@ -135,8 +175,12 @@ public class MainActivity extends AppCompatActivity {
             menu.findItem(R.id.hiddenDoneBtn).setVisible(true);
             menu.findItem(R.id.deleteBtn).setVisible(false);
             menu.findItem(R.id.backIconBtn).setVisible(false);
+            menu.findItem(R.id.unCheckIconBtn).setVisible(false);
             menu.findItem(R.id.checkIconBtn).setVisible(false);
         }
+
+        checkClickedItems();
+        invalidateOptionsMenu();
         return true;
     }
 
@@ -162,11 +206,19 @@ public class MainActivity extends AppCompatActivity {
                 displayMainMenu();
                 return true;
             case R.id.checkIconBtn:
-                openShopListActivity(title);
+                selectAllItems();
+
+                invalidateOptionsMenu();
+                return true;
+            case R.id.unCheckIconBtn:
+                clearAllClicked();
+
+                invalidateOptionsMenu();
                 return true;
             case R.id.clearAllIconBtn:
 
                 stringArrayList.clear();
+                tempArrayList.clear();
                 stringArrayAdapter.notifyDataSetChanged();
                 return true;
             default:
@@ -181,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initiateData() {
         notes=this.findViewById(R.id.notes);
-        listView = this.findViewById(R.id.listView);
+        listView = (ListView) this.findViewById(R.id.listView);
         toolbar = this.findViewById(R.id.menuToolbar);
         sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         String current = sharedPref.getString(myTitle,"");
@@ -191,44 +243,111 @@ public class MainActivity extends AppCompatActivity {
         else title = current;
         toolbar.setTitle(title);
         setSupportActionBar(toolbar);
+        indexTempArray = new ArrayList<Integer>();
         Set<String> sourceSet = sharedPref.getStringSet(storageKey+title, new HashSet<>());
         stringArrayList = new ArrayList<String>(sourceSet);
         stringArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringArrayList);
-
+        Set<String> sourceTempSet = sharedPref.getStringSet(storageTempKey+title, new HashSet<>());
+        tempArrayList = new ArrayList<>(sourceTempSet);
         stringArrayAdapter.notifyDataSetChanged();
         listView.setAdapter(stringArrayAdapter);
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        populateIndexTempArray();
         notes.requestFocus();
     }
     public void saveList(View view)
     {
         populateList();
+        checkClickedItems();
+        listView.invalidate();
+
     }
     public void removeItemFromListView(String item)
     {
         stringArrayList.remove(item);
+        checkClickedItems();
         stringArrayAdapter.notifyDataSetChanged();
+
     }
-  
     public void populateList()
     {
         if (!notes.getText().toString().matches(""))
         {
+            if (!stringArrayList.contains(notes.getText().toString()))
+            {stringArrayList.add(0, notes.getText().toString());
 
-            stringArrayList.add(0, notes.getText().toString());
             stringArrayAdapter.notifyDataSetChanged();
-
+            populateIndexTempArray();}
+            else Toast.makeText(getApplicationContext(),"duplikat",Toast.LENGTH_SHORT).show();
             notes.setText(null);
 
         }
+        checkClickedItems();
     }
-    public void openShopListActivity(String item)
+    public void checkClickedItems()
     {
-        Intent intent = new Intent(this, SecondPageActivity.class);
-        intent.putStringArrayListExtra("stringArrayList", stringArrayList);
-        intent.putExtra("title", item);
-        startActivity(intent);
+
+        for (int i=0; i<listView.getCount();i++) {
+            View v = listView.getChildAt(i);
+            if (v!=null)
+            {
+                v.setBackgroundResource(R.color.white);
+            }
+        }
+        indexTempArray.forEach((n) -> {
+            if (n-listView.getFirstVisiblePosition()>=0)
+            {
+                View v = listView.getChildAt(n-listView.getFirstVisiblePosition());
+                if (v!=null){
+                    v.setBackgroundResource(R.color.pressed_color);}
+            }
+        });
+        stringArrayAdapter.notifyDataSetChanged();
     }
+    public void clearAllClicked()
+    {
+        tempArrayList.clear();
+        indexTempArray.clear();
+        checkClickedItems();
+        stringArrayAdapter.notifyDataSetChanged();
+    }
+    public void selectAllItems()
+    {
+        tempArrayList.clear();
+        tempArrayList.addAll(stringArrayList);
+        stringArrayAdapter.notifyDataSetChanged();
+        populateIndexTempArray();
+        checkClickedItems();
 
+    }
+    public void populateIndexTempArray()
+    {
+        indexTempArray.clear();
+        for (int i = 0; i<stringArrayAdapter.getCount(); i++)
+        {
+            String item = stringArrayAdapter.getItem(i);
+            if (tempArrayList.contains(item))
+            {
+                indexTempArray.add(i);
+            }
+        }
+        checkClickedItems();
+    }
+    public void highLineItemListview(int position)
+    {
+        String item = (String)stringArrayAdapter.getItem(position);
+        boolean blnFound = tempArrayList.contains(item);
+        if (blnFound==true)
+        {
+            tempArrayList.remove(item);
+            indexTempArray.remove((Integer) position);
+        }
+        else
+        {
+            tempArrayList.add(item);
+            indexTempArray.add(position);
+        }
+        checkClickedItems();
 
-
+    }
 }
