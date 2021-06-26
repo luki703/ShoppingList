@@ -24,6 +24,8 @@ public class MainMenu extends AppCompatActivity {
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor editor;
     private String storageKey = "com.lukasz.ShoppingList.titleArrayList";
+    private String anotherStorageKey = "com.lukasz.ShoppingList.";
+    private String anotherStorageTempKey = "com.lukasz.ShoppingList.tempArrayList";
     private ArrayList titleArrayList;
     private ArrayList buttonsList;
     private EditText newListEditTextTitle;
@@ -90,8 +92,6 @@ public class MainMenu extends AppCompatActivity {
                 newListEditTextTitle.setText("");
             }
         });
-
-
     }
 
 
@@ -121,7 +121,7 @@ public class MainMenu extends AppCompatActivity {
             case R.id.deleteBtn:
                 toolbar.setBackgroundResource(R.color.red);
                 isDeleteMode=true;
-                toolbar.setTitle("Kasowanie");
+                toolbar.setTitle(R.string.deletingModeTitle);
                 invalidateOptionsMenu();
                 return true;
             case R.id.hiddenDoneBtn:

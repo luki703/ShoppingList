@@ -1,27 +1,21 @@
 package com.example.shoppinglist;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -36,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText notes;
     private String storageKey = "com.lukasz.ShoppingList.";
-    static String storageTempKey = "com.lukasz.ShoppingList.tempArrayList";
+    private String storageTempKey = "com.lukasz.ShoppingList.tempArrayList";
     private String myTitle="current";
 
     private ListView listView;
@@ -168,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.deleteBtn:
                 toolbar.setBackgroundResource(R.color.red);
                 isDeleteMode=true;
-                toolbar.setTitle("Kasowanie");
+                toolbar.setTitle(R.string.deletingModeTitle);
                 invalidateOptionsMenu();
                 return true;
             case R.id.hiddenDoneBtn:
@@ -259,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
 
             stringArrayAdapter.notifyDataSetChanged();
             populateIndexTempArray();}
-            else Toast.makeText(getApplicationContext(),"duplikat",Toast.LENGTH_SHORT).show();
+            else Toast.makeText(getApplicationContext(),"duplicate",Toast.LENGTH_SHORT).show();
             notes.setText(null);
 
         }

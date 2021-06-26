@@ -16,5 +16,6 @@
     <string name="nextBtnText">dalej</string>
     <string name="newListTitle">Wpisz tutaj tytuł nowej listy</string>
     <string name="mainMenuTitle">Listy</string>
+    <string name="deletingModeTitle">Kasowanie</string>
 
 </resources>
