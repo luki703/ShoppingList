@@ -84,50 +84,26 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                highLineItemListview(position);
+                if (isDeleteMode)
+                    removeItemFromListView(stringArrayAdapter.getItem(position));
+                else
+                    highLineItemListview(position);
+
             }
         });
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                String item = (String)stringArrayAdapter.getItem(position);
-                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                alertDialog.setTitle(getString(R.string.alertDialogTitle));
-                alertDialog.setMessage(getString(R.string.alertDialogText));
-                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.alertDialogPositive),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Log.d( "AlertDialog", "Positive" );
-                                removeItemFromListView(item);
 
-                                dialog.dismiss();
-                            }
-                        });
 
-                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.alertDialogNegative),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Log.d( "AlertDialog", "Negative" );
-
-                                dialog.dismiss();
-
-                            }
-                        });
-                alertDialog.show();
-
-                return false;
-            }
-        });
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
                     checkClickedItems();
+
                 }
             }
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                checkClickedItems();
+
             }
         });
 
@@ -233,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initiateData() {
         notes=this.findViewById(R.id.notes);
-        listView = (ListView) this.findViewById(R.id.listView);
+        listView = this.findViewById(R.id.listView);
         toolbar = this.findViewById(R.id.menuToolbar);
         sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         String current = sharedPref.getString(myTitle,"");
@@ -249,11 +225,12 @@ public class MainActivity extends AppCompatActivity {
         stringArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringArrayList);
         Set<String> sourceTempSet = sharedPref.getStringSet(storageTempKey+title, new HashSet<>());
         tempArrayList = new ArrayList<>(sourceTempSet);
-        stringArrayAdapter.notifyDataSetChanged();
+
         listView.setAdapter(stringArrayAdapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        stringArrayAdapter.notifyDataSetChanged();
         populateIndexTempArray();
-        notes.requestFocus();
+        //notes.requestFocus();
     }
     public void saveList(View view)
     {
@@ -264,9 +241,13 @@ public class MainActivity extends AppCompatActivity {
     }
     public void removeItemFromListView(String item)
     {
+
         stringArrayList.remove(item);
-        checkClickedItems();
+        tempArrayList.remove(item);
         stringArrayAdapter.notifyDataSetChanged();
+        populateIndexTempArray();
+        checkClickedItems();
+
 
     }
     public void populateList()
