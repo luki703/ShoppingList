@@ -12,10 +12,6 @@
         <activity android:name=".MainActivity">
 
         </activity>
-        <activity android:name=".SecondPageActivity">
-
-
-        </activity>
         <activity android:name=".MainMenu">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

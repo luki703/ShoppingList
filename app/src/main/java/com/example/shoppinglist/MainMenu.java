@@ -36,11 +36,7 @@ public class MainMenu extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-        editor = sharedPref.edit();
-        Set<String> foo = new HashSet<String>(titleArrayList);
-        editor.putStringSet(storageKey,foo);
-        editor.commit();
+        saveTitleArrayListState();
     }
 
     @Override
@@ -66,6 +62,7 @@ public class MainMenu extends AppCompatActivity {
                     {
                         titleArrayList.remove(button.getText());
                         ll.removeView(v);
+                        saveTitleArrayListState();
                     }
                 }
             });
@@ -74,7 +71,8 @@ public class MainMenu extends AppCompatActivity {
         addListBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!newListEditTextTitle.getText().toString().equals("")) {
+                if (!newListEditTextTitle.getText().toString().equals("")
+                        && !titleArrayList.contains(newListEditTextTitle.getText().toString())) {
                     titleArrayList.add(newListEditTextTitle.getText());
                     Button button = new Button(context);
                     button.setText(newListEditTextTitle.getText());
@@ -87,8 +85,9 @@ public class MainMenu extends AppCompatActivity {
                             openEditListActivity(button.getText().toString());
                         }
                     });
-                    newListEditTextTitle.setText("");
+
                 }
+                newListEditTextTitle.setText("");
             }
         });
 
@@ -101,10 +100,7 @@ public class MainMenu extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu,menu);
         menu.findItem(R.id.backIconBtn).setVisible(false);
-        menu.findItem(R.id.menuIconBtn).setVisible(false);
-        menu.findItem(R.id.checkIconBtn).setVisible(false);
         menu.findItem(R.id.clearAllIconBtn).setVisible(false);
-        menu.findItem(R.id.editIconBtn).setVisible(false);
         if (!isDeleteMode){
             menu.findItem(R.id.hiddenDoneBtn).setVisible(false);
             menu.findItem(R.id.deleteBtn).setVisible(true);
@@ -161,6 +157,13 @@ public class MainMenu extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("title", item);
         startActivity(intent);
+    }
+    private void saveTitleArrayListState() {
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
+        Set<String> foo = new HashSet<String>(titleArrayList);
+        editor.putStringSet(storageKey,foo);
+        editor.commit();
     }
 
 }
