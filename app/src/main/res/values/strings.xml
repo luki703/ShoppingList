@@ -1,21 +1,9 @@
 <resources>
     <string name="app_name">Shopping List</string>
     <string name="saveBtn">+</string>
-    <string name="notesDefaultText">Wpisz tutaj artykuł</string>
-    <string name="editTextTitle">Tytuł</string>
-    <string name="SecondPageButton">Przycisk</string>
-    <string name="SecondPageTitleText">Tytuł</string>
-    <string name="getBackBtn">Cofnij</string>
-    <string name="mainMenuBtn">Menu główne</string>
-    <string name="alertDialogText">Usunąć artykuł?</string>
-    <string name="alertDialogTitle">Alert</string>
-    <string name="alertDialogPositive">Usuń</string>
-    <string name="alertDialogNegative">Wstecz</string>
-    <string name="restartBtnText">Wyczyść listę</string>
-    <string name="restartClicked">Wyczyść zaznaczenia</string>
-    <string name="nextBtnText">dalej</string>
-    <string name="newListTitle">Wpisz tutaj tytuł nowej listy</string>
-    <string name="mainMenuTitle">Listy</string>
-    <string name="deletingModeTitle">Kasowanie</string>
+    <string name="notesDefaultText">Enter your article here</string>
+    <string name="newListTitle">Enter the title of your new list here</string>
+    <string name="mainMenuTitle">Your lists</string>
+    <string name="deletingModeTitle">Delete mode</string>
 
 </resources>

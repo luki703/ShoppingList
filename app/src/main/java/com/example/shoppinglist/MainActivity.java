@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -124,6 +125,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (!isDeleteMode){
 
+            invalidateOptionsMenu();
+            toolbar.setTitle(title);
+            toolbar.setBackgroundResource(R.color.light_blue);
             menu.findItem(R.id.deleteBtn).setVisible(true);
             menu.findItem(R.id.clearAllIconBtn).setVisible(false);
             menu.findItem(R.id.backIconBtn).setVisible(true);
@@ -141,12 +145,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         }else if(isDeleteMode){
+            invalidateOptionsMenu();
             menu.findItem(R.id.clearAllIconBtn).setVisible(true);
             menu.findItem(R.id.hiddenDoneBtn).setVisible(true);
             menu.findItem(R.id.deleteBtn).setVisible(false);
             menu.findItem(R.id.backIconBtn).setVisible(false);
             menu.findItem(R.id.unCheckIconBtn).setVisible(false);
             menu.findItem(R.id.checkIconBtn).setVisible(false);
+            toolbar.setTitle(R.string.deletingModeTitle);
+            toolbar.setBackgroundResource(R.color.red);
         }
 
         checkClickedItems();
@@ -160,16 +167,11 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
 
             case R.id.deleteBtn:
-                toolbar.setBackgroundResource(R.color.red);
                 isDeleteMode=true;
-                toolbar.setTitle(R.string.deletingModeTitle);
                 invalidateOptionsMenu();
                 return true;
             case R.id.hiddenDoneBtn:
-                toolbar.setBackgroundResource(R.color.light_blue);
-
                 isDeleteMode=false;
-                toolbar.setTitle(title);
                 invalidateOptionsMenu();
                 return true;
             case R.id.backIconBtn:
@@ -182,7 +184,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.unCheckIconBtn:
                 clearAllClicked();
-
                 invalidateOptionsMenu();
                 return true;
             case R.id.clearAllIconBtn:
@@ -190,9 +191,11 @@ public class MainActivity extends AppCompatActivity {
                 stringArrayList.clear();
                 tempArrayList.clear();
                 stringArrayAdapter.notifyDataSetChanged();
+                isDeleteMode=false;
+                invalidateOptionsMenu();
                 return true;
             default:
-                return super.onOptionsItemSelected(item);
+                return false;
         }
     }
 
