@@ -277,6 +277,7 @@ public class MainActivity extends AppCompatActivity {
             {
                 View v = listView.getChildAt(n-listView.getFirstVisiblePosition());
                 if (v!=null){
+
                     v.setBackgroundResource(R.color.pressed_color);}
             }
         });
